@@ -5,33 +5,45 @@ import contacts from "./contacts.json";
 function App() {
   let data = [...contacts];
   let fiveContacts = data.slice(0, 5);
-  let newArray = data.slice(5);
+  let newArray = data.slice(6);
   const [celebs, setCelebs] = useState(fiveContacts);
-  
-
+  const [remainingContacts, setRemainingContacts] = useState(data.slice(5))
 
   function addRandom() {
+    let remainingContactIndex = Math.floor(Math.random() * remainingContacts.length)
     let randomContact = newArray[Math.floor(Math.random() * newArray.length)];
     setCelebs([...celebs, randomContact]);
+    const copyRemainingContacts = [...remainingContacts]
+    copyRemainingContacts.splice(remainingContactIndex, 1)
+    setRemainingContacts(copyRemainingContacts)
   }
 
- function sortPopularity (){
+  function sortPopularity() {
     let populatirySorted = [...celebs].sort((a, b) =>
-    console.log('hello')
-     
+      a.popularity < b.popularity ? -1 : 1
     );
     setCelebs(populatirySorted);
- }
-  
+  }
+
+  function sortName() {
+    let nameSorted = [...celebs].sort((a, b) => (a.name < b.name ? -1 : 1));
+    setCelebs(nameSorted);
+  }
+
+  function deleteCeleb(id) {
+    const deletedArray = [...celebs].filter((celeb) => {
+      return celeb.id !== id;
+    });
+    setCelebs(deletedArray);
+  }
 
   return (
     <div className="App">
       <h1>Iron Contacts</h1>
       <div>
         <button onClick={addRandom}>Add Random Contact</button>
-        <button onClick={sortPopularity}>>Sort by Populatiry</button>
-        <button>Sort by Name</button>
-      
+        <button onClick={sortPopularity}>Sorte by Populatiry</button>
+        <button onClick={sortName}>Sorte by Name</button>
       </div>
       <table>
         <thead>
@@ -51,10 +63,11 @@ function App() {
                 <img src={contact.pictureUrl} alt="" />
               </td>
               <td>{contact.name}</td>
-              <td>{contact.popularity.toFixed(2)}</td>
+              <td>{contact.popularity}</td>
               {contact.wonOscar ? <td>🏆</td> : <td></td>}
               {contact.wonEmmy ? <td>🏆</td> : <td></td>}
               <td>
+                <button onClick={() => deleteCeleb(contact.id)}>Delete</button>
               </td>
             </tr>
           ))}
